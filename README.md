@@ -47,7 +47,8 @@ You may also change the location of the configuration cache itself by editing
 the `config/config.php` file and changing the `config_cache_path` entry of the
 local `$cacheConfig` variable.
 
-##Useful Information
+## Useful Information
+
 [Zend Expressive Documentation](https://docs.zendframework.com/zend-expressive/)
 
 [Zend Expressive Cookbook](https://www.gitbook.com/book/zfdevteam/expressive-cookbook/details)
