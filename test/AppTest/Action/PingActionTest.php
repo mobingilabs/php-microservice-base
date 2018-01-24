@@ -2,7 +2,7 @@
 
 namespace AppTest\Action;
 
-use App\Action\PingAction;
+use App\Action\EnvVarsAction;
 use Interop\Http\ServerMiddleware\DelegateInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
@@ -12,7 +12,7 @@ class PingActionTest extends TestCase
 {
     public function testResponse()
     {
-        $pingAction = new PingAction();
+        $pingAction = new EnvVarsAction();
         $response = $pingAction->process(
             $this->prophesize(ServerRequestInterface::class)->reveal(),
             $this->prophesize(DelegateInterface::class)->reveal()

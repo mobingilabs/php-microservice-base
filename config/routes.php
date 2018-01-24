@@ -29,5 +29,5 @@
 /** @var \Zend\Expressive\Application $app */
 
 $app->get('/', App\Action\HomePageAction::class, 'home');
-$app->get('/api/ping', App\Action\PingAction::class, 'api.ping');
+$app->get('/env-vars', App\Action\EnvVarsAction::class, 'env-vars');
 $app->get('/dynamo-db', App\Action\DynamoDbAction::class, 'dynamo-db');
