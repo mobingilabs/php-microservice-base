@@ -1,9 +1,9 @@
 {
-    "name": "zendframework/zend-expressive-skeleton",
-    "description": "Zend expressive skeleton. Begin developing PSR-7 middleware applications in seconds!",
+    "name": "mobingilabs/php-microservice-base",
+    "description": "Mobingi PHP base using zend expressive skeleton.",
     "type": "project",
-    "homepage": "https://github.com/zendframework/zend-expressive-skeleton",
-    "license": "BSD-3-Clause",
+    "homepage": "https://github.com/mobingilabs/php-microservice-base",
+    "license": "proprietary",
     "config": {
         "sort-packages": true
     },
@@ -20,10 +20,11 @@
         "zendframework/zend-expressive-fastroute": "^2.0"
     },
     "require-dev": {
+        "filp/whoops": "^2.1.7",
         "phpunit/phpunit": "^6.0.8 || ^5.7.15",
         "squizlabs/php_codesniffer": "^2.8.1",
-        "zfcampus/zf-development-mode": "^3.1",
-        "filp/whoops": "^2.1.7"
+        "zendframework/zend-expressive-tooling": "^0.4.5",
+        "zfcampus/zf-development-mode": "^3.1"
     },
     "autoload": {
         "psr-4": {
