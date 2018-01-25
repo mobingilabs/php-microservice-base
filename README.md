@@ -52,3 +52,5 @@ local `$cacheConfig` variable.
 [Zend Expressive Documentation](https://docs.zendframework.com/zend-expressive/)
 
 [Zend Expressive Cookbook](https://www.gitbook.com/book/zfdevteam/expressive-cookbook/details)
+
+[12 Factor (English)](https://12factor.net/) - [12 Factor (日本語)](https://12factor.net/ja/)

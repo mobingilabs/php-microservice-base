@@ -32,7 +32,11 @@ class DynamoDbAction implements MiddlewareInterface
 //        );
 
 //        return new TextResponse('Hello, world!');
+
 //        return new HtmlResponse('<h1>Hello Zend!</h1>');
+
+
+        rand(1, 3);
         return new JsonResponse(['$routeName' => $routeName]);
     }
 }
