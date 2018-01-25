@@ -9,6 +9,11 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class EnvVarsAction implements MiddlewareInterface
 {
+    /**
+     * @param ServerRequestInterface $request
+     * @param DelegateInterface $delegate
+     * @return JsonResponse
+     */
     public function process(ServerRequestInterface $request, DelegateInterface $delegate): JsonResponse
     {
         return new JsonResponse(getenv());

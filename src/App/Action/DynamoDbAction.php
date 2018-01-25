@@ -13,12 +13,18 @@ use Zend\Diactoros\Response\RedirectResponse;
 use Zend\Diactoros\Response\TextResponse;
 use Zend\Expressive\Router\RouteResult;
 
-class DynamoDbAction implements MiddlewareInterface
+class DynamoDbAction extends AbstractAction
 {
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate)
+    /**
+     * @param ServerRequestInterface $request
+     * @param DelegateInterface $delegate
+     * @return JsonResponse
+     */
+    public function indexGet(ServerRequestInterface $request, DelegateInterface $delegate)
     {
-        $route     = $request->getAttribute(RouteResult::class);
-        $routeName = $route->getMatchedRoute()->getName();
+//        $route     = $request->getAttribute(RouteResult::class);
+//        $routeName = $route->getMatchedRoute()->getName();
+
 //        return new EmptyResponse();
 //        return new EmptyResponse(StatusCodeInterface::STATUS_ACCEPTED);
 //        return new EmptyResponse(StatusCodeInterface::STATUS_ACCEPTED, ['Location' => 'api/ping']);
@@ -35,8 +41,6 @@ class DynamoDbAction implements MiddlewareInterface
 
 //        return new HtmlResponse('<h1>Hello Zend!</h1>');
 
-
-        rand(1, 3);
-        return new JsonResponse(['$routeName' => $routeName]);
+        return new JsonResponse(['rand(1, 3)' => rand(1, 3)]);
     }
 }

@@ -34,10 +34,10 @@ class ConfigProvider
         return [
             'invokables' => [
                 Action\EnvVarsAction::class  => Action\EnvVarsAction::class,
-                Action\DynamoDbAction::class => Action\DynamoDbAction::class,
             ],
             'factories'  => [
-                Action\HomePageAction::class => Action\HomePageFactory::class,
+                Action\HomeAction::class     => Factory\HomeFactory::class,
+                Action\DynamoDbAction::class => Factory\DynamoDbFactory::class,
             ],
         ];
     }

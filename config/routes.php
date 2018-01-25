@@ -28,6 +28,6 @@
 
 /** @var \Zend\Expressive\Application $app */
 
-$app->get('/', App\Action\HomePageAction::class, 'home');
+$app->get('/', App\Action\HomeAction::class, 'home');
 $app->get('/env-vars', App\Action\EnvVarsAction::class, 'env-vars');
 $app->get('/dynamo-db', App\Action\DynamoDbAction::class, 'dynamo-db');
