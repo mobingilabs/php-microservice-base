@@ -30,4 +30,4 @@
 
 $app->get('/', App\Action\HomeAction::class, 'home');
 $app->get('/env-vars', App\Action\EnvVarsAction::class, 'env-vars');
-$app->get('/dynamo-db', App\Action\DynamoDbAction::class, 'dynamo-db');
+$app->get('/dynamo-db[/{id}]', App\Action\DynamoDbAction::class, 'dynamo-db');

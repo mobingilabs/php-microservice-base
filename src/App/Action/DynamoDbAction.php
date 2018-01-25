@@ -2,6 +2,10 @@
 
 namespace App\Action;
 
+use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Exception\DynamoDbException;
+use Aws\DynamoDb\Marshaler;
+use Aws\Sdk;
 use Fig\Http\Message\StatusCodeInterface;
 use Interop\Http\ServerMiddleware\DelegateInterface;
 use Interop\Http\ServerMiddleware\MiddlewareInterface;
@@ -15,6 +19,11 @@ use Zend\Expressive\Router\RouteResult;
 
 class DynamoDbAction extends AbstractAction
 {
+    /**
+     * @var DynamoDbClient
+     */
+    public $dynamo;
+
     /**
      * @param ServerRequestInterface $request
      * @param DelegateInterface $delegate
@@ -41,6 +50,30 @@ class DynamoDbAction extends AbstractAction
 
 //        return new HtmlResponse('<h1>Hello Zend!</h1>');
 
-        return new JsonResponse(['rand(1, 3)' => rand(1, 3)]);
+        $id = $request->getAttribute('id', 'team-5837e6c9ef3bd-DZcGfEMBV');
+
+        $marshaler = new Marshaler();
+        $tableName = 'MC_TEAM';
+
+
+        $key = $marshaler->marshalJson('
+            {
+                "team_id": "'.$id.'"
+            }
+        ');
+
+        $params = [
+            'TableName' => $tableName,
+            'Key' => $key,
+        ];
+
+        try {
+            $result = $this->dynamo->getItem($params);
+        } catch (DynamoDbException $e) {
+            echo "Unable to get item:\n";
+            echo $e->getMessage() . "\n";
+        }
+
+        return new JsonResponse($marshaler->unmarshalItem($result['Item']));
     }
 }

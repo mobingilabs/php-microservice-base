@@ -16,6 +16,8 @@ class EnvVarsAction implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, DelegateInterface $delegate): JsonResponse
     {
-        return new JsonResponse(getenv());
+        $envVars = getenv();
+        ksort($envVars);
+        return new JsonResponse($envVars);
     }
 }
