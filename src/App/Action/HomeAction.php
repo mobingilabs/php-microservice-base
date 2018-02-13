@@ -19,7 +19,7 @@ class HomeAction extends AbstractAction
         foreach ($this->app->getRoutes() as $route) {
             $methods       = implode('|', $route->getAllowedMethods());
             $name          = "{$methods}:{$route->getName()}";
-            $routes[$name] = 'http://' . $_SERVER['SERVER_NAME'] . $route->getPath();
+            $routes[$name] = 'http://' . $_SERVER['HTTP_HOST'] . $route->getPath();
         }
 
         return new JsonResponse($routes);
