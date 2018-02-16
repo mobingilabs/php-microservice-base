@@ -15,6 +15,26 @@ class HomeAction extends AbstractAction
      */
     public function indexGet(ServerRequestInterface $request, DelegateInterface $delegate)
     {
+
+//        $route     = $request->getAttribute(RouteResult::class);
+//        $routeName = $route->getMatchedRoute()->getName();
+//
+//        return new EmptyResponse();
+//        return new EmptyResponse(StatusCodeInterface::STATUS_ACCEPTED);
+//        return new EmptyResponse(StatusCodeInterface::STATUS_ACCEPTED, ['Location' => 'api/ping']);
+//
+//        return new RedirectResponse('/api/ping');
+//        return new RedirectResponse('/api/ping', StatusCodeInterface::STATUS_PERMANENT_REDIRECT);
+//        return new RedirectResponse(
+//            '/api/ping',
+//            StatusCodeInterface::STATUS_TEMPORARY_REDIRECT,
+//            ['X-ORIGINAL_URI' => 'dynamo-db']
+//        );
+//
+//        return new TextResponse('Hello, world!');
+//
+//        return new HtmlResponse('<h1>Hello Zend!</h1>');
+
         $routes = [];
         foreach ($this->app->getRoutes() as $route) {
             $methods       = implode('|', $route->getAllowedMethods());

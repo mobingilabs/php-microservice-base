@@ -54,3 +54,5 @@ local `$cacheConfig` variable.
 [Zend Expressive Cookbook](https://www.gitbook.com/book/zfdevteam/expressive-cookbook/details)
 
 [12 Factor (English)](https://12factor.net/) - [12 Factor (日本語)](https://12factor.net/ja/)
+
+[REST API Checklist](http://www.kennethlange.com/posts/The-Ultimate-Checklist-for-REST-APIs.html)
