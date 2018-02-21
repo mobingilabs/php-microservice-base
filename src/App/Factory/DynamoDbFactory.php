@@ -3,7 +3,7 @@
 namespace App\Factory;
 
 use App\Action\DynamoDbAction;
-use Aws\Sdk;
+use App\Model\DynamoDbModel;
 use Interop\Container\ContainerInterface;
 
 class DynamoDbFactory extends AbstractFactory
@@ -18,16 +18,7 @@ class DynamoDbFactory extends AbstractFactory
     {
         $construct = parent::__invoke($container);
 
-        $sdk = new Sdk([
-            'region'      => getenv('DYNAMO_REGION'),
-            'version'     => getenv('DYNAMO_VERSION'),
-            'credentials' => [
-                'key'    => getenv('DYNAMO_KEY'),
-                'secret' => getenv('DYNAMO_SECRET'),
-            ]
-        ]);
-
-        $construct['dynamo'] = $sdk->createDynamoDb();
+        $construct['dynamo'] = new DynamoDbModel($construct);
 
         return new DynamoDbAction($construct);
     }
