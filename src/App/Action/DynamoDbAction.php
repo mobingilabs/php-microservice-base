@@ -19,14 +19,19 @@ class DynamoDbAction extends AbstractAction
     /**
      * @param ServerRequestInterface $request
      * @param DelegateInterface $delegate
-     * @return JsonResponse
+     * @return EmptyResponse|JsonResponse
      */
-    public function indexGet(ServerRequestInterface $request, DelegateInterface $delegate): JsonResponse
+    public function indexGet(ServerRequestInterface $request, DelegateInterface $delegate)
     {
         $id = $request->getAttribute('id');
 
         if ($id) {
             $data = $this->dynamo->get('MC_TEAM', ['team_id' => $id]);
+            if ($data) {
+                return new JsonResponse($data);
+            } else {
+                return new EmptyResponse(StatusCodeInterface::STATUS_NOT_FOUND);
+            }
         } else {
             $data = $this->dynamo->getCollection('MC_TEAM', '#user_id = :user_id', ['user_id' => '590fdb7bad55s']);
         }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Middleware\FinalMiddleware;
 use Zend\Expressive\Helper\ServerUrlMiddleware;
 use Zend\Expressive\Helper\UrlHelperMiddleware;
 use Zend\Expressive\Middleware\ImplicitHeadMiddleware;
@@ -49,7 +50,9 @@ $app->pipe(UrlHelperMiddleware::class);
 // - etc.
 
 // Register the dispatch middleware in the middleware pipeline
+$app->pipe(FinalMiddleware::class);
 $app->pipeDispatchMiddleware();
+
 
 // At this point, if no Response is returned by any middleware, the
 // NotFoundHandler kicks in; alternately, you can provide other fallback
