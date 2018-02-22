@@ -46,10 +46,31 @@ class AbstractModel
         return $data;
     }
 
-//    public function getCollection($where = false)
-//    {
-//        die(__METHOD__);
-//    }
+    public function getCollection($tableName, $filter, array $data)
+    {
+        $eav = $ean = [];
+        foreach ($data as $index => $value) {
+            $eav[":${index}"] = $value;
+            $ean["#{$index}"] = $index;
+        }
+
+        $params = [
+            'TableName'                 => $tableName,
+            'FilterExpression'          => $filter,
+            'ExpressionAttributeNames'  => $ean,
+            'ExpressionAttributeValues' => $this->marshaller->marshalItem($eav),
+            'ReturnConsumedCapacity'    => 'TOTAL',
+        ];
+
+        $result = $this->dynamo->scan($params);
+
+        $data = [];
+        foreach ($result['Items'] as $item) {
+            $data[] = $this->marshaller->unmarshalItem($item);
+        }
+
+        return $data;
+    }
 
     public function put($tableName, array $data)
     {
@@ -67,12 +88,12 @@ class AbstractModel
     {
         $temp = $this->marshaller->marshalItem($data);
 
-        $ue = 'SET';
+        $ue  = 'SET';
         $eav = $ean = [];
         foreach ($temp as $index => $value) {
             $eav[":${index}"] = $value;
             $ean["#{$index}"] = $index;
-            $ue.=" #{$index}=:${index}";
+            $ue               .= " #{$index}=:${index}";
         }
 
         $params = [
@@ -86,7 +107,7 @@ class AbstractModel
 
         $result = $this->dynamo->updateItem($params);
 
-        $update  = ($result['Attributes']) ? $this->marshaller->unmarshalItem($result['Attributes']) : [];
+        $update = ($result['Attributes']) ? $this->marshaller->unmarshalItem($result['Attributes']) : [];
 
         return $update;
     }
@@ -101,12 +122,4 @@ class AbstractModel
 
         return $result;
     }
-
-//    private function _getTableName()
-//    {
-//        $name = substr(strrchr(get_class($this), '\\'), 1);
-//        $name = str_replace('Model', '', $name);
-//
-//        return strtolower($name);
-//    }
 }

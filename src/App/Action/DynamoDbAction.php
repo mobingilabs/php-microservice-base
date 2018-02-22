@@ -23,9 +23,15 @@ class DynamoDbAction extends AbstractAction
      */
     public function indexGet(ServerRequestInterface $request, DelegateInterface $delegate): JsonResponse
     {
-        $id = $request->getAttribute('id', 'team-5837e6c9ef3bd-DZcGfEMBV');
+        $id = $request->getAttribute('id');
 
-        return new JsonResponse($this->dynamo->get('MC_TEAM', ['team_id' => $id]));
+        if ($id) {
+            $data = $this->dynamo->get('MC_TEAM', ['team_id' => $id]);
+        } else {
+            $data = $this->dynamo->getCollection('MC_TEAM', '#user_id = :user_id', ['user_id' => '590fdb7bad55s']);
+        }
+
+        return new JsonResponse($data);
     }
 
     /**
