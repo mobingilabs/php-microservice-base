@@ -27,7 +27,7 @@ class FinalMiddleware implements MiddlewareInterface
         /** @var JsonResponse $response */
         $response = $delegate->process($request);
         $payload  = $response->getPayload();
-        $eTag     = '"' . md5(implode($payload)) . '"';
+        $eTag     = '"' . md5(serialize($payload)) . '"';
 
         $response = $response->withHeader('X-Powered-By', 'Mobingi.com')
                              ->withHeader('X-RateLimit-Limit', '500')
