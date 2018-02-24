@@ -1,5 +1,6 @@
 <?php
 
+use App\Middleware\BeginningMiddleware;
 use App\Middleware\FinalMiddleware;
 use Zend\Expressive\Helper\ServerUrlMiddleware;
 use Zend\Expressive\Helper\UrlHelperMiddleware;
@@ -50,6 +51,7 @@ $app->pipe(UrlHelperMiddleware::class);
 // - etc.
 
 // Register the dispatch middleware in the middleware pipeline
+$app->pipe(BeginningMiddleware::class);
 $app->pipe(FinalMiddleware::class);
 $app->pipeDispatchMiddleware();
 
