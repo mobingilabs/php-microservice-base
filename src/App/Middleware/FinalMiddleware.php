@@ -7,6 +7,7 @@ use Interop\Http\ServerMiddleware\DelegateInterface;
 use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Response;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\JsonResponse;
 
@@ -24,21 +25,24 @@ class FinalMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, DelegateInterface $delegate)
     {
-        /** @var JsonResponse $response */
+        /** @var Response $response */
         $response = $delegate->process($request);
-        $payload  = $response->getPayload();
-        $eTag     = '"' . md5(serialize($payload)) . '"';
 
         $response = $response->withHeader('X-Powered-By', 'Mobingi.com')
                              ->withHeader('X-RateLimit-Limit', '500')
                              ->withHeader('X-RateLimit-Remaining', '497')
-                             ->withHeader('X-RateLimit-Reset', '1519339170')
-                             ->withHeader('ETag', $eTag);
+                             ->withHeader('X-RateLimit-Reset', '1519339170');
 
-        if ($request->hasHeader('If-None-Match')) {
-            $ifNoneMatch = $request->getHeader('If-None-Match')[0];
-            if ($ifNoneMatch === $eTag) {
-                return new EmptyResponse(StatusCodeInterface::STATUS_NOT_MODIFIED, $response->getHeaders());
+        if ($response instanceof JsonResponse) {
+            $payload  = $response->getPayload();
+            $eTag     = '"' . md5(serialize($payload)) . '"';
+            $response = $response->withHeader('ETag', $eTag);
+
+            if ($request->hasHeader('If-None-Match')) {
+                $ifNoneMatch = $request->getHeader('If-None-Match')[0];
+                if ($ifNoneMatch === $eTag) {
+                    return new EmptyResponse(StatusCodeInterface::STATUS_NOT_MODIFIED, $response->getHeaders());
+                }
             }
         }
 

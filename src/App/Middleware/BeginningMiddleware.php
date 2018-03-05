@@ -23,15 +23,18 @@ class BeginningMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, DelegateInterface $delegate)
     {
-        $json = json_decode($request->getBody()->getContents());
+        $methods = ['POST', 'PATCH'];
+        if (in_array($request->getMethod(), $methods)) {
+            $json = json_decode($request->getBody()->getContents());
 
-        if (empty($json)) {
-            return new JsonResponse(['message' => 'Problems parsing JSON'], StatusCodeInterface::STATUS_BAD_REQUEST);
-        } elseif (empty((array)$json)) {
-            return new JsonResponse(
-                ['message' => 'Body should be a valid JSON object'],
-                StatusCodeInterface::STATUS_BAD_REQUEST
-            );
+            if (empty($json)) {
+                return new JsonResponse(['message' => 'Problems parsing JSON'], StatusCodeInterface::STATUS_BAD_REQUEST);
+            } elseif (empty((array)$json)) {
+                return new JsonResponse(
+                    ['message' => 'Body should be a valid JSON object'],
+                    StatusCodeInterface::STATUS_BAD_REQUEST
+                );
+            }
         }
 
         return $delegate->process($request);
