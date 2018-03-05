@@ -23,20 +23,29 @@ class BeginningMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, DelegateInterface $delegate)
     {
+        if (! $request->hasHeader('user-agent')) {
+            return new JsonResponse(
+                ['message' => 'Please make sure your request has a User-Agent header.'],
+                StatusCodeInterface::STATUS_FORBIDDEN
+            );
+        }
         $methods = ['POST', 'PATCH'];
         if (in_array($request->getMethod(), $methods)) {
             $json = json_decode($request->getBody()->getContents());
 
             if (empty($json)) {
-                return new JsonResponse(['message' => 'Problems parsing JSON'], StatusCodeInterface::STATUS_BAD_REQUEST);
+                return new JsonResponse(
+                    ['message' => 'Problems parsing JSON.'],
+                    StatusCodeInterface::STATUS_BAD_REQUEST
+                );
             } elseif (empty((array)$json)) {
                 return new JsonResponse(
-                    ['message' => 'Body should be a valid JSON object'],
+                    ['message' => 'Body should be a valid JSON object.'],
                     StatusCodeInterface::STATUS_BAD_REQUEST
                 );
             }
         }
 
-        return $delegate->process($request);
+        return $delegate->process($request)->withAddedHeader('Access-Control-Allow-Origin', '*');
     }
 }

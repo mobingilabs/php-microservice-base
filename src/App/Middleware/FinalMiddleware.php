@@ -29,6 +29,9 @@ class FinalMiddleware implements MiddlewareInterface
         $response = $delegate->process($request);
 
         $response = $response->withHeader('X-Powered-By', 'Mobingi.com')
+                             ->withHeader('X-Content-Type-Options', 'nosniff')
+                             ->withHeader('X-Frame-Options', 'deny')
+                             ->withHeader('X-XSS-Protection', '1; mode=block')
                              ->withHeader('X-RateLimit-Limit', '500')
                              ->withHeader('X-RateLimit-Remaining', '497')
                              ->withHeader('X-RateLimit-Reset', '1519339170');
