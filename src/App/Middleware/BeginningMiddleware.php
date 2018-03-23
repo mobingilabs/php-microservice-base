@@ -8,6 +8,7 @@ use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\JsonResponse;
+use Zend\Http\Client;
 
 class BeginningMiddleware implements MiddlewareInterface
 {
@@ -46,6 +47,52 @@ class BeginningMiddleware implements MiddlewareInterface
             }
         }
 
-        return $delegate->process($request)->withAddedHeader('Access-Control-Allow-Origin', '*');
+        if (! $request->hasHeader('authorization')) {
+            return new JsonResponse(
+                ['message' => 'Please make sure your request has a Authorization header.'],
+                StatusCodeInterface::STATUS_FORBIDDEN
+            );
+        }
+
+        $user = $this->decryptToken($request);
+        if (! isset($user['user_id'])) {
+            return new JsonResponse(
+                ['message' => 'Invalid Authorization header.'],
+                StatusCodeInterface::STATUS_FORBIDDEN
+            );
+        }
+
+        $response = $delegate->process($request->withAttribute('user', $user));
+        if ($request->hasHeader('X-Correlation-Id')) {
+            $response = $response->withAddedHeader('X-Correlation-Id', $request->getHeader('X-Correlation-Id')[0]);
+        }
+
+        if (! $request->hasHeader('Access-Control-Allow-Origin')) {
+            $response = $response->withAddedHeader('Access-Control-Allow-Origin', '*');
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return array
+     */
+    public function decryptToken(ServerRequestInterface $request): array
+    {
+        $client = new Client();
+        $client->setOptions(['timeout' => 60]);
+        $client->setUri(getenv('API_DEV_URL') . '/decrypt');
+        $client->setMethod('GET');
+        $client->setHeaders(['authorization' => $request->getHeader('authorization')[0]]);
+        if ($request->hasHeader('X-Correlation-Id')) {
+            $client->setHeaders(['X-Correlation-Id' => $request->getHeader('X-Correlation-Id')[0]]);
+        }
+
+        $response     = $client->send();
+        $user         = (array)json_decode($response->getBody());
+        $user['root'] = isset($user['username']) ? false : true;
+
+        return $user;
     }
 }

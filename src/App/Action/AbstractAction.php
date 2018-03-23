@@ -7,6 +7,7 @@ use Interop\Http\ServerMiddleware\DelegateInterface;
 use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\EmptyResponse;
+use Zend\Expressive\Router\RouteResult;
 
 class AbstractAction implements MiddlewareInterface
 {
@@ -19,6 +20,12 @@ class AbstractAction implements MiddlewareInterface
      * @var array All application configurations
      */
     public $config = [];
+
+
+    /**
+     * @var array User information
+     */
+    public $user = [];
 
     /**
      * AbstractAction constructor.
@@ -38,12 +45,26 @@ class AbstractAction implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, DelegateInterface $delegate)
     {
-        $action = $request->getAttribute('action', 'index') . ucfirst(strtolower($request->getMethod()));
+        $result   = $request->getAttribute(RouteResult::class);
+        $function = $result->getMatchedRouteName();
 
-        if (! method_exists($this, $action)) {
+        if (! method_exists($this, $function)) {
             return new EmptyResponse(StatusCodeInterface::STATUS_NOT_FOUND);
         }
 
-        return $this->{$action}($request, $delegate);
+        $this->user = $request->getAttribute('user');
+
+        return $this->{$function}($request, $delegate);
+    }
+
+    /**
+     * Generate Header Location
+     *
+     * @param $path
+     * @return string
+     */
+    public function headerLocation($path): String
+    {
+        return "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}{$path}";
     }
 }

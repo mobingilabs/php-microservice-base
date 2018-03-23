@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Exception\DynamoDbException;
 use Aws\DynamoDb\Marshaler;
 use Aws\Sdk;
 
@@ -84,42 +85,96 @@ class AbstractModel
         return $result;
     }
 
-    public function update($tableName, array $key, array $data)
+    /**
+     * @param $tableName
+     * @param array $key
+     * @param array $data
+     * @param array $condition
+     * @return array|bool|\stdClass
+     * @throws \Exception
+     */
+    public function update($tableName, array $key, array $data, array $condition = [])
     {
-        $temp = $this->marshaller->marshalItem($data);
-
-        $ue  = 'SET';
-        $eav = $ean = [];
-        foreach ($temp as $index => $value) {
+        $ue = $eav = $ean = [];
+        foreach ($data as $index => $value) {
             $eav[":${index}"] = $value;
             $ean["#{$index}"] = $index;
-            $ue               .= " #{$index}=:${index}";
+            $ue[]             = "#{$index}=:${index}";
+        }
+        $ue = implode(', ', $ue);
+        $ue = 'SET ' . $ue;
+
+        if (! empty($condition)) {
+            $ce = [];
+            foreach ($condition as $index => $value) {
+                $eav[":${index}"] = $value;
+                $ean["#{$index}"] = $index;
+                $ce[]             = "(#{$index}=:${index})";
+            }
+            $ce = implode(' and ', $ce);
+
+            $params['ConditionExpression'] = $ce;
         }
 
-        $params = [
-            'TableName'                 => $tableName,
-            'Key'                       => $this->marshaller->marshalItem($key),
-            'UpdateExpression'          => $ue,
-            'ExpressionAttributeNames'  => $ean,
-            'ExpressionAttributeValues' => $eav,
-            'ReturnValues'              => 'ALL_NEW'
-        ];
+        $params['TableName']                 = $tableName;
+        $params['Key']                       = $this->marshaller->marshalItem($key);
+        $params['UpdateExpression']          = $ue;
+        $params['ExpressionAttributeNames']  = $ean;
+        $params['ExpressionAttributeValues'] = $this->marshaller->marshalItem($eav);
+        $params['ReturnValues']              = 'ALL_NEW';
 
-        $result = $this->dynamo->updateItem($params);
+        try {
+            $result = $this->dynamo->updateItem($params);
+            $update = ($result['Attributes']) ? $this->marshaller->unmarshalItem($result['Attributes']) : [];
 
-        $update = ($result['Attributes']) ? $this->marshaller->unmarshalItem($result['Attributes']) : [];
-
-        return $update;
+            return $update;
+        } catch (DynamoDbException $e) {
+            if ($e->getAwsErrorCode() === 'ConditionalCheckFailedException') {
+                return false;
+            } else {
+                throw new \Exception($e);
+            }
+        }
     }
 
-    public function delete($tableName, array $key)
+    /**
+     * @param $tableName
+     * @param array $key
+     * @param array $condition
+     * @return bool
+     * @throws \Exception
+     */
+    public function delete($tableName, array $key, array $condition = [])
     {
         $params = [
             'TableName' => $tableName,
             'Key'       => $this->marshaller->marshalItem($key),
         ];
-        $result = $this->dynamo->deleteItem($params);
 
-        return $result;
+        if (! empty($condition)) {
+            $ce = $eav = $ean = [];
+            foreach ($condition as $index => $value) {
+                $eav[":${index}"] = $value;
+                $ean["#{$index}"] = $index;
+                $ce[]             = "(#{$index}=:${index})";
+            }
+            $ce = implode(' and ', $ce);
+
+            $params['ExpressionAttributeNames']  = $ean;
+            $params['ExpressionAttributeValues'] = $this->marshaller->marshalItem($eav);
+            $params['ConditionExpression']       = $ce;
+        }
+
+        try {
+            $this->dynamo->deleteItem($params);
+        } catch (DynamoDbException $e) {
+            if ($e->getAwsErrorCode() === 'ConditionalCheckFailedException') {
+                return false;
+            } else {
+                throw new \Exception($e);
+            }
+        }
+
+        return true;
     }
 }

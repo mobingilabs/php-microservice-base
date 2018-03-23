@@ -32,12 +32,10 @@ class ConfigProvider
     public function getDependencies()
     {
         return [
-            'invokables' => [
-                Action\EnvVarsAction::class  => Action\EnvVarsAction::class,
-            ],
+            'invokables' => [],
             'factories'  => [
-                Action\HomeAction::class     => Factory\HomeFactory::class,
-                Action\DynamoDbAction::class => Factory\DynamoDbFactory::class,
+                Action\HomeAction::class    => Factory\HomeFactory::class,
+                Action\SafeBoxAction::class => Factory\SafeBoxFactory::class,
             ],
         ];
     }

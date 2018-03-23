@@ -13,33 +13,13 @@ class HomeAction extends AbstractAction
      * @param DelegateInterface $delegate
      * @return JsonResponse
      */
-    public function indexGet(ServerRequestInterface $request, DelegateInterface $delegate)
+    public function home(ServerRequestInterface $request, DelegateInterface $delegate)
     {
-
-//        $route     = $request->getAttribute(RouteResult::class);
-//        $routeName = $route->getMatchedRoute()->getName();
-//
-//        return new EmptyResponse();
-//        return new EmptyResponse(StatusCodeInterface::STATUS_ACCEPTED);
-//        return new EmptyResponse(StatusCodeInterface::STATUS_ACCEPTED, ['Location' => 'api/ping']);
-//
-//        return new RedirectResponse('/api/ping');
-//        return new RedirectResponse('/api/ping', StatusCodeInterface::STATUS_PERMANENT_REDIRECT);
-//        return new RedirectResponse(
-//            '/api/ping',
-//            StatusCodeInterface::STATUS_TEMPORARY_REDIRECT,
-//            ['X-ORIGINAL_URI' => 'dynamo-db']
-//        );
-//
-//        return new TextResponse('Hello, world!');
-//
-//        return new HtmlResponse('<h1>Hello Zend!</h1>');
-
         $routes = [];
         foreach ($this->app->getRoutes() as $route) {
             $methods       = implode('|', $route->getAllowedMethods());
             $name          = "{$methods}:{$route->getName()}";
-            $routes[$name] = $_SERVER['REQUEST_SCHEME'].'://' . $_SERVER['HTTP_HOST'] . $route->getPath();
+            $routes[$name] = $this->headerLocation($route->getPath());
         }
 
         return new JsonResponse($routes);
