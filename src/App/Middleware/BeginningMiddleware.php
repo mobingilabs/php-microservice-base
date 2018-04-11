@@ -82,7 +82,7 @@ class BeginningMiddleware implements MiddlewareInterface
     {
         $client = new Client();
         $client->setOptions(['timeout' => 60]);
-        $client->setUri(getenv('API_DEV_URL') . '/decrypt');
+        $client->setUri('http://' . getenv('ALM_APIV3_SERVICE_HOST') . '/v3/decrypt');
         $client->setMethod('GET');
         $client->setHeaders(['authorization' => $request->getHeader('authorization')[0]]);
         if ($request->hasHeader('X-Correlation-Id')) {
