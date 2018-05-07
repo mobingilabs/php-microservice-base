@@ -1,13 +1,38 @@
 <?php
-/** @var \Zend\Expressive\Application $app */
 
-$app->get('/', App\Action\HomeAction::class, 'home');
-$app->get('/env-vars', App\Action\EnvVarsAction::class, 'envVars');
+declare(strict_types=1);
 
-$app->post('/safe-box/encrypt', App\Action\SafeBoxAction::class, 'safeBoxEncrypt');
-$app->post('/safe-box/decrypt', App\Action\SafeBoxAction::class, 'safeBoxDecrypt');
+use Psr\Container\ContainerInterface;
+use Zend\Expressive\Application;
+use Zend\Expressive\MiddlewareFactory;
 
-$app->post('/safe-box', App\Action\SafeBoxAction::class, 'safeBoxCreate');
-$app->get('/safe-box[/{name}]', App\Action\SafeBoxAction::class, 'safeBoxRead');
-$app->patch('/safe-box/{name}', App\Action\SafeBoxAction::class, 'safeBoxUpdate');
-$app->delete('/safe-box/{name}', App\Action\SafeBoxAction::class, 'safeBoxDelete');
+/**
+ * Setup routes with a single request method:
+ *
+ * $app->get('/', App\Handler\HomePageHandler::class, 'home');
+ * $app->post('/album', App\Handler\AlbumCreateHandler::class, 'album.create');
+ * $app->put('/album/:id', App\Handler\AlbumUpdateHandler::class, 'album.put');
+ * $app->patch('/album/:id', App\Handler\AlbumUpdateHandler::class, 'album.patch');
+ * $app->delete('/album/:id', App\Handler\AlbumDeleteHandler::class, 'album.delete');
+ *
+ * Or with multiple request methods:
+ *
+ * $app->route('/contact', App\Handler\ContactHandler::class, ['GET', 'POST', ...], 'contact');
+ *
+ * Or handling all request methods:
+ *
+ * $app->route('/contact', App\Handler\ContactHandler::class)->setName('contact');
+ *
+ * or:
+ *
+ * $app->route(
+ *     '/contact',
+ *     App\Handler\ContactHandler::class,
+ *     Zend\Expressive\Router\Route::HTTP_METHOD_ANY,
+ *     'contact'
+ * );
+ */
+return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container) : void {
+    $app->get('/', App\Handler\HomePageHandler::class, 'home');
+    $app->get('/api/ping', App\Handler\PingHandler::class, 'api.ping');
+};

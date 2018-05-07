@@ -1,4 +1,4 @@
-# Expressive Skeleton - Mobingi PHP Base
+# Expressive Skeleton 3 - Mobingi PHP Base
 
 ## Application Development Mode Tool
 
