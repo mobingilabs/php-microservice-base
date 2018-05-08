@@ -17,6 +17,10 @@ use Zend\Stratigility\Middleware\ErrorHandler;
 
 /**
  * Setup middleware pipeline:
+ *
+ * @param Application        $app
+ * @param MiddlewareFactory  $factory
+ * @param ContainerInterface $container
  */
 return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container) : void {
     // The error handler should be the first (most outer) middleware to catch
