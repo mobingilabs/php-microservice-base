@@ -31,6 +31,7 @@ class AbstractHandler implements RequestHandlerInterface
 
     /**
      * AbstractAction constructor.
+     *
      * @param array $injection
      */
     public function __construct(array $injection)
@@ -44,6 +45,7 @@ class AbstractHandler implements RequestHandlerInterface
      * Generate Header Location
      *
      * @param $path
+     *
      * @return string
      */
     public function headerLocation($path): String
@@ -63,11 +65,11 @@ class AbstractHandler implements RequestHandlerInterface
         $result   = $request->getAttribute(RouteResult::class);
         $function = $result->getMatchedRouteName();
 
-        if (! method_exists($this, $function)) {
+        if (!method_exists($this, $function)) {
             return new EmptyResponse(StatusCodeInterface::STATUS_NOT_FOUND);
         }
 
-        $this->user = $request->getAttribute('user');
+        $this->user = $request->getAttribute('x-user');
 
         return $this->{$function}($request);
     }

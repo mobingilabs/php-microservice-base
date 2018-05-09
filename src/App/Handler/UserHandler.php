@@ -28,7 +28,7 @@ class UserHandler extends AbstractHandler
      *
      * @return EmptyResponse|JsonResponse
      */
-    public function createUser(ServerRequestInterface $request)
+    public function userRead(ServerRequestInterface $request)
     {
         $id = $request->getAttribute('id');
 

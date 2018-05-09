@@ -38,5 +38,6 @@ use Zend\Expressive\MiddlewareFactory;
  */
 return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
     $app->get('/', App\Handler\HomeHandler::class, 'home');
-    $app->get('/user/{id}', App\Handler\UserHandler::class, 'createUser');
+
+    $app->get('/user[/{id}]', App\Handler\UserHandler::class, 'userRead');
 };

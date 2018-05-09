@@ -111,26 +111,4 @@ class UserFilter
 
         return $this->filter->getMessages();
     }
-
-    public function filterUserEncrypt($data)
-    {
-        $this->filter->add(self::FILTER_VALUE);
-        $this->filter->setData($data);
-        if ($this->filter->isValid()) {
-            return true;
-        }
-
-        return $this->filter->getMessages();
-    }
-
-    public function filterUserDecrypt($data)
-    {
-        $this->filter->add(self::FILTER_ENCRYPTED_VALUE);
-        $this->filter->setData($data);
-        if ($this->filter->isValid()) {
-            return true;
-        }
-
-        return $this->filter->getMessages();
-    }
 }
