@@ -39,5 +39,8 @@ use Zend\Expressive\MiddlewareFactory;
 return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
     $app->get('/', App\Handler\HomeHandler::class, 'home');
 
+    $app->post('/user', App\Handler\UserHandler::class, 'userCreate');
     $app->get('/user[/{id}]', App\Handler\UserHandler::class, 'userRead');
+    $app->patch('/user/{id}', App\Handler\UserHandler::class, 'userUpdate');
+    $app->delete('/user/{username}', App\Handler\UserHandler::class, 'userDelete');
 };
