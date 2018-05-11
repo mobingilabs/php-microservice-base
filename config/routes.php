@@ -40,7 +40,7 @@ return function (Application $app, MiddlewareFactory $factory, ContainerInterfac
     $app->get('/', App\Handler\HomeHandler::class, 'home');
 
     $app->post('/user', App\Handler\UserHandler::class, 'userCreate');
-    $app->get('/user[/{id}]', App\Handler\UserHandler::class, 'userRead');
-    $app->patch('/user/{id}', App\Handler\UserHandler::class, 'userUpdate');
+    $app->get('/user[/{user_id}]', App\Handler\UserHandler::class, 'userRead');
+    $app->patch('/user/{user_id}', App\Handler\UserHandler::class, 'userUpdate');
     $app->delete('/user/{username}', App\Handler\UserHandler::class, 'userDelete');
 };

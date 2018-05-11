@@ -8,7 +8,7 @@ class UserFilter
 {
     const FILTER_ID
         = [
-            'name'       => 'id',
+            'name'       => 'user_id',
             'required'   => true,
             'validators' => [
                 [

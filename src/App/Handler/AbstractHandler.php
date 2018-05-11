@@ -69,7 +69,7 @@ class AbstractHandler implements RequestHandlerInterface
             return new EmptyResponse(StatusCodeInterface::STATUS_NOT_FOUND);
         }
 
-        $this->user = $request->getAttribute('x-user');
+        $this->user = $request->getAttribute('authorization-user');
 
         return $this->{$function}($request);
     }

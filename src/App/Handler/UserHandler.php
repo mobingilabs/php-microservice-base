@@ -31,10 +31,10 @@ class UserHandler extends AbstractHandler
      */
     public function userRead(ServerRequestInterface $request): ResponseInterface
     {
-        $id = $request->getAttribute('id');
+        $id = $request->getAttribute('user_id');
 
         if ($id) {
-            $filtered = $this->filter->filterUserRead(['id' => $id]);
+            $filtered = $this->filter->filterUserRead(['user_id' => $id]);
             if (is_array($filtered)) {
                 return new JsonResponse($filtered, StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY);
             }
@@ -43,7 +43,7 @@ class UserHandler extends AbstractHandler
 
             if (!$data) {
                 $data = $this->dynamo->get('MC_IDENTITY', ['username' => $id]);
-                if (!$data) {
+                if (!$data || (isset($data['status']) && $data['status'] === 'deleted')) {
                     return new EmptyResponse(StatusCodeInterface::STATUS_NOT_FOUND);
                 }
             }
@@ -65,6 +65,8 @@ class UserHandler extends AbstractHandler
             unset($data['password']);
             return new JsonResponse($data);
         } else {
+            $result = [];
+
             if (isset($this->user['username'])) {
                 $data[] = $this->dynamo->get('MC_IDENTITY', ['username' => $this->user['username']]);
             } else {
@@ -74,12 +76,17 @@ class UserHandler extends AbstractHandler
                     ['mobingi_user' => $this->user['user_id']]
                 );
             }
-            foreach ($data as &$current) {
+
+            foreach ($data as $current) {
                 unset($current['password']);
+
+                if (!isset($current['status']) || $current['status'] !== 'deleted') {
+                    $result[] = $current;
+                }
             }
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse($result);
     }
 
     /**
@@ -135,9 +142,9 @@ class UserHandler extends AbstractHandler
      */
     public function userUpdate(ServerRequestInterface $request): ResponseInterface
     {
-        $id         = $request->getAttribute('id');
-        $body       = $request->getParsedBody();
-        $body['id'] = $id;
+        $id              = $request->getAttribute('user_id');
+        $body            = $request->getParsedBody();
+        $body['user_id'] = $id;
 
         $filtered = $this->filter->filterUserUpdate($body);
         if (is_array($filtered)) {
@@ -155,7 +162,7 @@ class UserHandler extends AbstractHandler
         if (isset($body['email'])) {
             $info['email'] = $body['email'];
         }
-        if(isset($body['notification']['email'])) {
+        if (isset($body['notification']['email'])) {
             $info['notification']['email'] = $body['notification']['email'];
         }
 
@@ -171,7 +178,7 @@ class UserHandler extends AbstractHandler
             }
         }
 
-        unset($data['password'], $data['id']);
+        unset($data['password'], $data['user_id']);
 
         $location = $this->headerLocation("/user/{$id}");
 

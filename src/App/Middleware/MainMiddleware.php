@@ -48,23 +48,24 @@ class MainMiddleware implements MiddlewareInterface
             }
         }
 
-        if (!$request->hasHeader('x-user')) {
+        if (!$request->hasHeader('authorization')) {
             return new JsonResponse(
-                ['message' => 'Please make sure your request has a X-User header.'],
+                ['message' => 'Please make sure your request has a Authorization header for Microservices.'],
                 StatusCodeInterface::STATUS_FORBIDDEN
             );
         }
 
-        $user = json_decode(base64_decode($request->getHeader('x-user')[0]));
+        $user = explode('Bearer ', $request->getHeader('authorization')[0]);
+        $user = json_decode(base64_decode($user[1]));
 
         if (empty($user) || empty((array)$user) || !isset($user->user_id)) {
             return new JsonResponse(
-                ['message' => ' X-User header is invalid.'],
+                ['message' => 'Authorization header for Microservices is invalid.'],
                 StatusCodeInterface::STATUS_BAD_REQUEST
             );
         }
 
-        $response = $handler->handle($request->withAttribute('x-user', (array)$user));
+        $response = $handler->handle($request->withAttribute('authorization-user', (array)$user));
 
         if ($request->hasHeader('X-Correlation-Id')) {
             $response = $response->withAddedHeader('X-Correlation-Id', $request->getHeader('X-Correlation-Id')[0]);
