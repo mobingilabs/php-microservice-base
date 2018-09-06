@@ -6,6 +6,7 @@ namespace App\Factory;
 
 use Psr\Container\ContainerInterface;
 use Zend\Expressive\Application;
+use Zend\Http\Client;
 
 class AbstractFactory
 {
@@ -16,9 +17,15 @@ class AbstractFactory
      */
     public function __invoke(ContainerInterface $container)
     {
+        $client = new Client();
+        $client->setOptions([
+                                'timeout'   => 30,
+                                'useragent' => 'RBAC-Request',
+                            ]);
         $injection = [
             'app'    => $container->get(Application::class),
             'config' => $container->get('config'),
+            'client' => $client,
         ];
 
         return $injection;

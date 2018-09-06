@@ -42,25 +42,24 @@ class MainMiddleware implements MiddlewareInterface
                 );
             } else if (empty((array)$json)) {
                 return new JsonResponse(
-                    ['message' => 'Body should be a valid JSON object.'],
+                    ['message' => 'Body should not be empty.'],
                     StatusCodeInterface::STATUS_BAD_REQUEST
                 );
             }
         }
 
-        if (!$request->hasHeader('authorization')) {
+        if (! $request->hasHeader('x-user')) {
             return new JsonResponse(
-                ['message' => 'Please make sure your request has a Authorization header for Microservices.'],
+                ['message' => 'Please make sure your request has a X-User header for Microservices.'],
                 StatusCodeInterface::STATUS_FORBIDDEN
             );
         }
 
-        $user = explode('Bearer ', $request->getHeader('authorization')[0]);
-        $user = json_decode(base64_decode($user[1]));
+        $user = json_decode(base64_decode($request->getHeader('x-user')[0]));
 
-        if (empty($user) || empty((array)$user) || !isset($user->user_id)) {
+        if (empty($user) || empty((array)$user) || ! isset($user->user_id)) {
             return new JsonResponse(
-                ['message' => 'Authorization header for Microservices is invalid.'],
+                ['message' => 'X-User header for Microservices is invalid.'],
                 StatusCodeInterface::STATUS_BAD_REQUEST
             );
         }

@@ -7,40 +7,21 @@ use Zend\Expressive\Application;
 use Zend\Expressive\MiddlewareFactory;
 
 /**
- * Setup routes with a single request method:
- *
- * $app->get('/', App\Handler\HomePageHandler::class, 'home');
- * $app->post('/album', App\Handler\AlbumCreateHandler::class, 'album.create');
- * $app->put('/album/:id', App\Handler\AlbumUpdateHandler::class, 'album.put');
- * $app->patch('/album/:id', App\Handler\AlbumUpdateHandler::class, 'album.patch');
- * $app->delete('/album/:id', App\Handler\AlbumDeleteHandler::class, 'album.delete');
- *
- * Or with multiple request methods:
- *
- * $app->route('/contact', App\Handler\ContactHandler::class, ['GET', 'POST', ...], 'contact');
- *
- * Or handling all request methods:
- *
- * $app->route('/contact', App\Handler\ContactHandler::class)->setName('contact');
- *
- * or:
- *
- * $app->route(
- *     '/contact',
- *     App\Handler\ContactHandler::class,
- *     Zend\Expressive\Router\Route::HTTP_METHOD_ANY,
- *     'contact'
- * );
- *
- * @param Application        $app
- * @param MiddlewareFactory  $factory
+ * @param Application $app
+ * @param MiddlewareFactory $factory
  * @param ContainerInterface $container
  */
 return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
     $app->get('/', App\Handler\HomeHandler::class, 'home');
 
-    $app->post('/user', App\Handler\UserHandler::class, 'userCreate');
-    $app->get('/user[/{user_id}]', App\Handler\UserHandler::class, 'userRead');
-    $app->patch('/user/{user_id}', App\Handler\UserHandler::class, 'userUpdate');
-    $app->delete('/user/{username}', App\Handler\UserHandler::class, 'userDelete');
+    $app->post('/inspect', App\Handler\RbacHandler::class, 'inspect');
+    $app->get('/actions', App\Handler\RbacHandler::class, 'actions');
+
+    $app->patch('/roles/user/{username}', App\Handler\RolesHandler::class, 'rolesUserUpdate');
+    $app->delete('/roles/user/{username}', App\Handler\RolesHandler::class, 'rolesUserDelete');
+
+    $app->post('/roles', App\Handler\RolesHandler::class, 'rolesCreate');
+    $app->get('/roles[/{role_id}]', App\Handler\RolesHandler::class, 'rolesRead');
+    $app->patch('/roles/{role_id}', App\Handler\RolesHandler::class, 'rolesUpdate');
+    $app->delete('/roles/{role_id}', App\Handler\RolesHandler::class, 'rolesDelete');
 };

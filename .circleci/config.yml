@@ -1,0 +1,104 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: diegovarussa/ci-php:0.0.2
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/mysql:9.4
+
+    working_directory: /var/www/html
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "composer.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: composer install -n --prefer-dist
+
+      - save_cache:
+          paths:
+            - ./vendor
+          key: v1-dependencies-{{ checksum "composer.json" }}
+
+      # run tests
+      - run: composer run test
+
+      # enable development mode
+      - run: composer development-enable
+
+      # folder permission
+      - run: chmod 777 -R /var/www/html/data
+
+      # add env vars to apache
+      - run:
+          name: apache-env-vars
+          shell: /bin/bash
+          command: |
+            echo "export LOGS_IN_FILE=${LOGS_IN_FILE}" >> /etc/apache2/envvars
+            echo "export DYNAMO_KEY=${DYNAMO_KEY}" >> /etc/apache2/envvars
+            echo "export DYNAMO_SECRET=${DYNAMO_SECRET}" >> /etc/apache2/envvars
+            echo "export DYNAMO_REGION=${DYNAMO_REGION}" >> /etc/apache2/envvars
+            echo "export DYNAMO_VERSION=${DYNAMO_VERSION}" >> /etc/apache2/envvars
+            service apache2 start
+
+      # get newman report template
+      - run: git clone https://github.com/MarcosEllys/awesome-newman-html-template.git
+
+      # postman test
+      - run:
+          name: postman-tests
+          shell: /bin/bash
+          command: |
+            newman run "https://api.getpostman.com/collections/${POSTMAN_COLLECTION}?apikey=${POSTMAN_API_KEY}" \
+            -r cli,html,json \
+            --reporter-html-template awesome-newman-html-template/templates/htmlreqres.hbs \
+            --reporter-html-export newman/rbac.html \
+            --reporter-json-export newman/rbac.json \
+
+      # save postman results
+      - store_artifacts:
+          path: newman/
+          destination: tests-result
+
+      # save logs results
+      - store_artifacts:
+          path: data/
+          destination: logs-result
+
+      # deploy to ouchan if you are not using (skip-deploy) as the last word im commit and branch is development
+      - run:
+          name: deploy-ouchan-if-development-branch
+          shell: /bin/bash
+          command: |
+            GIT_MESSAGE=$(git log --format=oneline -n 1 $CIRCLE_SHA1)
+            regex='\(skip-deploy\)$'
+            if ! [[ ${GIT_MESSAGE} =~ $regex ]]
+            then
+              if [ $CIRCLE_BRANCH = development ]
+                then
+                  pushd /tmp/
+                  git clone https://${MOBINGI_DEPLOYER_KEY}:@github.com/mobingilabs/ouchan.git
+                  cd ouchan/services/rbac/
+                  git config --local user.name "mobingideployer"
+                  git config --local user.email "dev@mobingi.com"
+                  NOW=`date`
+                  echo "Updated at ${NOW}" > updated.txt
+                  git add .
+                  git commit -am "Trigger rbac deployment at ${NOW} from ${CIRCLE_BRANCH}"
+                  git push
+                  popd
+                fi
+            fi

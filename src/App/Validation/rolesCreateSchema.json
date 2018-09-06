@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "http://rbac/rolesCreateSchema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "statement": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "effect": {
+                "type": "string",
+                "enum": [
+                  "allow",
+                  "deny"
+                ]
+              },
+              "action": {
+                "type": "string"
+              },
+              "resource": {}
+            },
+            "additionalProperties": false,
+            "required": [
+              "effect",
+              "action",
+              "resource"
+            ]
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "statement"
+      ]
+    }
+  },
+  "required": [
+    "name",
+    "scope"
+  ]
+}

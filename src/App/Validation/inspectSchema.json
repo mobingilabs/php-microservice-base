@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "http://rbac/inspectSchema#",
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "GET",
+        "POST",
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    "role": {
+      "$ref": "rolesSchema.json"
+    },
+    "filter_field": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "resource_id": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "raw_body": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "url",
+    "method",
+    "role"
+  ]
+}

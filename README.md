@@ -1,4 +1,4 @@
-# Expressive Skeleton 3 - Mobingi PHP Base
+# Expressive Skeleton 3 - EXAMPLE Micro-service 
 
 ## Application Development Mode Tool
 
@@ -48,6 +48,8 @@ the `config/config.php` file and changing the `config_cache_path` entry of the
 local `$cacheConfig` variable.
 
 ## Useful Information
+
+[Mobing API Design](https://github.com/mobingilabs/microservice-docs/wiki/API-Design)
 
 [Zend Expressive Documentation](https://docs.zendframework.com/zend-expressive/)
 

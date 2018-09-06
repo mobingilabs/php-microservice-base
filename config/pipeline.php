@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Middleware\ValidationMiddleware;
 use App\Middleware\MainMiddleware;
 use Psr\Container\ContainerInterface;
 use Zend\Expressive\Application;
@@ -64,9 +65,9 @@ return function (Application $app, MiddlewareFactory $factory, ContainerInterfac
 
     // Seed the UrlHelper with the routing results:
     $app->pipe(UrlHelperMiddleware::class);
-    $app->pipe(BodyParamsMiddleware::class);
 
     $app->pipe(MainMiddleware::class);
+    $app->pipe(ValidationMiddleware::class);
 
     // Add more middleware here that needs to introspect the routing results; this
     // might include:

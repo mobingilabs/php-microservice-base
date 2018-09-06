@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "http://rbac/rolesSchema#",
+  "type": "string",
+  "enum": [
+    "view:events",
+
+    "create:vendor.credentials",
+    "view:vendor.credentials",
+    "edit:vendor.credentials",
+    "delete:vendor.credentials",
+
+    "create:vendor.stacks",
+    "view:vendor.stacks",
+    "edit:vendor.stacks",
+    "delete:vendor.stacks",
+
+    "create:safe-box",
+    "view:safe-box",
+    "edit:safe-box",
+    "delete:safe-box",
+
+    "create:users",
+    "view:users",
+    "edit:users",
+    "delete:users",
+
+    "create:users.client",
+    "view:users.client",
+    "edit:users.client",
+    "delete:users.client",
+
+    "view:wave.account",
+    "edit:wave.user.password"
+  ]
+}
