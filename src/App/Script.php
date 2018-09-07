@@ -124,7 +124,7 @@ Follow the composer instructions and it will generate the project using data pro
         $readme = str_replace($search, '', $readme);
         file_put_contents('./README.md', $readme);
 
-//        unlink('./src/App/Script.php');
+        unlink('./src/App/Script.php');
     }
 
     private static function toCamelCase($string): string
