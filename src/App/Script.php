@@ -104,6 +104,16 @@ class Script
 
     private static function finishScript()
     {
+        $search = <<<STRING
+
+        "pre-install-cmd": "App\\Script::install",
+        "pre-update-cmd": "App\\Script::install",
+STRING;
+
+        $composerJson = file_get_contents('./composer.json');
+        $composerJson = str_replace($search, '', $composerJson);
+        file_put_contents('./composer.json', $composerJson);
+
         unlink('./src/App/Script.php');
     }
 
