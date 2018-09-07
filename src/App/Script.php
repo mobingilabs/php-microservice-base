@@ -33,18 +33,18 @@ class Script
 
     public static function install(): void
     {
-        $serviceName  = self::ask('What is the "micro-service" name?');
-        $resourceName = self::ask('What is the "resource" name?');
-        $answer       = self::ask("Service name is [{$serviceName}] and resource name is [{$resourceName}], do you want to continue? y/n");
-
-        if ($answer === 'n' || $answer === 'no') {
-            echo PHP_EOL . 'Canceling...' . PHP_EOL;
-            exit(0);
-        }
-
-        self::replaceFilesContentResource($resourceName);
-        self::replaceFilesContentService($serviceName);
-        self::renameFiles($resourceName);
+//        $serviceName  = self::ask('What is the "micro-service" name?');
+//        $resourceName = self::ask('What is the "resource" name?');
+//        $answer       = self::ask("Service name is [{$serviceName}] and resource name is [{$resourceName}], do you want to continue? y/n");
+//
+//        if ($answer === 'n' || $answer === 'no') {
+//            echo PHP_EOL . 'Canceling...' . PHP_EOL;
+//            exit(0);
+//        }
+//
+//        self::replaceFilesContentResource($resourceName);
+//        self::replaceFilesContentService($serviceName);
+//        self::renameFiles($resourceName);
         self::finishScript();
         exit(0);
     }
@@ -104,16 +104,14 @@ class Script
 
     private static function finishScript()
     {
-        $search = <<<STRING
-
-        "pre-install-cmd": "App\\Script::install",
-        "pre-update-cmd": "App\\Script::install",
-STRING;
+        $search = '
+        "pre-install-cmd": "App\\\\Script::install",';
 
         $composerJson = file_get_contents('./composer.json');
         $composerJson = str_replace($search, '', $composerJson);
         file_put_contents('./composer.json', $composerJson);
 
+        unlink('./composer.lock');
         unlink('./src/App/Script.php');
     }
 
