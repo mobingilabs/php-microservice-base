@@ -20,7 +20,7 @@ class AbstractFactory
         $client = new Client();
         $client->setOptions([
                                 'timeout'   => 30,
-                                'useragent' => 'RBAC-Request',
+                                'useragent' => 'SERVICE_NAME-Request',
                             ]);
         $injection = [
             'app'    => $container->get(Application::class),

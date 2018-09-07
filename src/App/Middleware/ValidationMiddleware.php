@@ -18,7 +18,7 @@ class ValidationMiddleware implements MiddlewareInterface
 {
     const FILTER_ROLE_ID
         = [
-            'name'       => 'role_id',
+            'name'       => 'example_id',
             'required'   => true,
             'validators' => [
                 [
@@ -33,27 +33,6 @@ class ValidationMiddleware implements MiddlewareInterface
                     'options' => [
                         'pattern' => '/^[a-zA-Z0-9-]+$/',
                         'message' => "It is only allowed 'letters', 'numbers', '-'",
-                    ],
-                ],
-            ],
-        ];
-    const FILTER_USERNAME
-        = [
-            'name'       => 'username',
-            'required'   => true,
-            'validators' => [
-                [
-                    'name'    => 'StringLength',
-                    'options' => [
-                        'min' => 4,
-                        'max' => 18,
-                    ],
-                ],
-                [
-                    'name'    => 'Regex',
-                    'options' => [
-                        'pattern' => '/^[a-zA-Z0-9_.]+$/',
-                        'message' => "It is only allowed 'letters', 'numbers', '_', '.'",
                     ],
                 ],
             ],
@@ -135,21 +114,7 @@ class ValidationMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    public function inspect($data): array
-    {
-        $errors = [];
-        if (in_array($data->method, ['PATCH', 'DELETE'])) {
-            if (!isset($data->resource_id)) {
-                $errors['resource_id'] = [
-                    'value_dependence' => 'The property (resource_id) is required if (method) is [PATCH] or [DELETE]'
-                ];
-            }
-        }
-
-        return $errors;
-    }
-
-    public function rolesCreate($data): array
+    public function exampleCreate($data): array
     {
         $errors = [];
         foreach ($data->scope->statement as $index => $item) {
@@ -165,37 +130,22 @@ class ValidationMiddleware implements MiddlewareInterface
         return $errors;
     }
 
-    public function rolesRead(): array
+    public function exampleRead(): array
     {
-        return $this->paramValidation('role_id', self::FILTER_ROLE_ID);
+        return $this->paramValidation('example_id', self::FILTER_ROLE_ID);
     }
 
-    public function rolesUpdate(): array
+    public function exampleUpdate($data): array
     {
-        return $this->paramValidation('role_id', self::FILTER_ROLE_ID);
+        $params = $this->paramValidation('example_id', self::FILTER_ROLE_ID);
+        $errors = $this->exampleCreate($data);
+
+        return array_merge($params, $errors);
     }
 
-    public function rolesDelete(): array
+    public function exampleDelete(): array
     {
-        return $this->paramValidation('role_id', self::FILTER_ROLE_ID);
-    }
-
-    public function rolesUserUpdate($data): array
-    {
-        $errors = $this->paramValidation('username', self::FILTER_USERNAME);
-
-        if (!$this->dynamo->validRoleId($data->role_id, $this->user['user_id'])) {
-            $errors['role_id'] = [
-                'invalid_property' => 'The property (role_id) is invalid'
-            ];
-        }
-
-        return $errors;
-    }
-
-    public function rolesUserDelete(): array
-    {
-        return $this->paramValidation('username', self::FILTER_USERNAME);
+        return $this->paramValidation('example_id', self::FILTER_ROLE_ID);
     }
 
     private function paramValidation(string $param, array $filter): array

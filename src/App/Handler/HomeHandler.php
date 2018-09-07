@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace App\Handler;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\JsonResponse;
 
 class HomeHandler extends AbstractHandler
 {
     /**
-     * @param ServerRequestInterface $request
-     *
      * @return ResponseInterface
      */
-    public function home(ServerRequestInterface $request): ResponseInterface
+    public function home(): ResponseInterface
     {
         $data = [];
         foreach ($this->app->getRoutes() as $route) {

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "id": "http://rbac/rolesCreateSchema#",
+  "id": "http://SERVICE_NAME/exampleCreateSchema#",
   "type": "object",
   "properties": {
     "name": {

@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
-use App\Model\RbacModel;
-use App\Model\RolesModel;
+use App\Model\ExampleModel;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\JsonResponse;
-use Zend\Permissions\Rbac\Rbac;
-use Zend\Permissions\Rbac\Role;
 
-class RolesHandler extends AbstractHandler
+class ExampleHandler extends AbstractHandler
 {
     /**
-     * @var RolesModel
+     * @var ExampleModel
      */
     public $dynamo;
 
@@ -27,7 +24,7 @@ class RolesHandler extends AbstractHandler
      * @return ResponseInterface
      * @throws \Exception
      */
-    public function rolesCreate(ServerRequestInterface $request): ResponseInterface
+    public function exampleCreate(ServerRequestInterface $request): ResponseInterface
     {
         $body = json_decode((string)$request->getBody(), true);
 
@@ -40,7 +37,7 @@ class RolesHandler extends AbstractHandler
 
         $this->dynamo->put('MC_ROLES', $info);
 
-        $location = $this->headerLocation("/roles/{$info['role_id']}");
+        $location = $this->headerLocation("/example/{$info['role_id']}");
 
         return new JsonResponse($info, StatusCodeInterface::STATUS_CREATED, ['Location' => $location]);
     }
@@ -50,9 +47,9 @@ class RolesHandler extends AbstractHandler
      *
      * @return ResponseInterface
      */
-    public function rolesRead(ServerRequestInterface $request): ResponseInterface
+    public function exampleRead(ServerRequestInterface $request): ResponseInterface
     {
-        $id = $request->getAttribute('role_id');
+        $id = $request->getAttribute('example_id');
 
         if ($id) {
             $data = $this->dynamo->get('MC_ROLES', ['role_id' => $id, 'user_id' => $this->user['user_id']]);
@@ -82,9 +79,9 @@ class RolesHandler extends AbstractHandler
      * @return ResponseInterface
      * @throws \Exception
      */
-    public function rolesUpdate(ServerRequestInterface $request): ResponseInterface
+    public function exampleUpdate(ServerRequestInterface $request): ResponseInterface
     {
-        $id   = $request->getAttribute('role_id');
+        $id   = $request->getAttribute('example_id');
         $body = json_decode((string)$request->getBody(), true);
 
         if (isset($body['name'])) {
@@ -103,7 +100,7 @@ class RolesHandler extends AbstractHandler
             return new EmptyResponse(StatusCodeInterface::STATUS_NOT_FOUND);
         }
 
-        $location = $this->headerLocation("/roles/{$id}");
+        $location = $this->headerLocation("/example/{$id}");
 
         return new JsonResponse($data, StatusCodeInterface::STATUS_OK, ['Location' => $location]);
     }
@@ -114,9 +111,9 @@ class RolesHandler extends AbstractHandler
      * @return ResponseInterface
      * @throws \Exception
      */
-    public function rolesDelete(ServerRequestInterface $request): ResponseInterface
+    public function exampleDelete(ServerRequestInterface $request): ResponseInterface
     {
-        $id                   = $request->getAttribute('role_id');
+        $id                   = $request->getAttribute('example_id');
         $condition['user_id'] = $this->user['user_id'];
 
         $result = $this->dynamo->delete('MC_ROLES', ['role_id' => $id, 'user_id' => $this->user['user_id']], $condition);
@@ -126,46 +123,4 @@ class RolesHandler extends AbstractHandler
         );
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return ResponseInterface
-     * @throws \Exception
-     */
-    public function rolesUserUpdate(ServerRequestInterface $request): ResponseInterface
-    {
-        $username = $request->getAttribute('username');
-        $body     = json_decode((string)$request->getBody(), true);
-
-        $info['role_id']     = $body['role_id'];
-        $info['update_time'] = (new \DateTime)->format(DATE_ATOM);
-
-        $condition['mobingi_user'] = $this->user['user_id'];
-
-        $data = $this->dynamo->update('MC_IDENTITY', ['username' => $username], $info, $condition);
-        if ($data === false) {
-            return new EmptyResponse(StatusCodeInterface::STATUS_NOT_FOUND);
-        }
-
-        $location = $this->headerLocation("/roles/{$info['role_id']}");
-
-        unset($data['password']);
-
-        return new JsonResponse($data, StatusCodeInterface::STATUS_OK, ['Location' => $location]);
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return ResponseInterface
-     * @throws \Exception
-     */
-    public function rolesUserDelete(ServerRequestInterface $request): ResponseInterface
-    {
-        $username = $request->getAttribute('username');
-
-        $this->dynamo->removeRoleIdAttr($username);
-
-        return new EmptyResponse(StatusCodeInterface::STATUS_NO_CONTENT);
-    }
 }

@@ -14,14 +14,8 @@ use Zend\Expressive\MiddlewareFactory;
 return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
     $app->get('/', App\Handler\HomeHandler::class, 'home');
 
-    $app->post('/inspect', App\Handler\RbacHandler::class, 'inspect');
-    $app->get('/actions', App\Handler\RbacHandler::class, 'actions');
-
-    $app->patch('/roles/user/{username}', App\Handler\RolesHandler::class, 'rolesUserUpdate');
-    $app->delete('/roles/user/{username}', App\Handler\RolesHandler::class, 'rolesUserDelete');
-
-    $app->post('/roles', App\Handler\RolesHandler::class, 'rolesCreate');
-    $app->get('/roles[/{role_id}]', App\Handler\RolesHandler::class, 'rolesRead');
-    $app->patch('/roles/{role_id}', App\Handler\RolesHandler::class, 'rolesUpdate');
-    $app->delete('/roles/{role_id}', App\Handler\RolesHandler::class, 'rolesDelete');
+    $app->post('/example', App\Handler\ExampleHandler::class, 'exampleCreate');
+    $app->get('/example[/{example_id}]', App\Handler\ExampleHandler::class, 'exampleRead');
+    $app->patch('/example/{example_id}', App\Handler\ExampleHandler::class, 'exampleUpdate');
+    $app->delete('/example/{example_id}', App\Handler\ExampleHandler::class, 'exampleDelete');
 };

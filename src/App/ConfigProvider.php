@@ -32,12 +32,11 @@ class ConfigProvider
     {
         return [
             'invokables' => [
-                Middleware\MainMiddleware::class       => Middleware\MainMiddleware::class,
+                Middleware\MainMiddleware::class => Middleware\MainMiddleware::class,
             ],
             'factories'  => [
                 Handler\HomeHandler::class             => Factory\HomeFactory::class,
-                Handler\RbacHandler::class             => Factory\RbacFactory::class,
-                Handler\RolesHandler::class            => Factory\RolesFactory::class,
+                Handler\ExampleHandler::class          => Factory\ExampleFactory::class,
                 Middleware\ValidationMiddleware::class => Factory\ValidationFactory::class,
             ],
         ];

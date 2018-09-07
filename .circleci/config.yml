@@ -65,8 +65,8 @@ jobs:
             newman run "https://api.getpostman.com/collections/${POSTMAN_COLLECTION}?apikey=${POSTMAN_API_KEY}" \
             -r cli,html,json \
             --reporter-html-template awesome-newman-html-template/templates/htmlreqres.hbs \
-            --reporter-html-export newman/rbac.html \
-            --reporter-json-export newman/rbac.json \
+            --reporter-html-export newman/SERVICE_NAME.html \
+            --reporter-json-export newman/SERVICE_NAME.json \
 
       # save postman results
       - store_artifacts:
@@ -91,13 +91,13 @@ jobs:
                 then
                   pushd /tmp/
                   git clone https://${MOBINGI_DEPLOYER_KEY}:@github.com/mobingilabs/ouchan.git
-                  cd ouchan/services/rbac/
+                  cd ouchan/services/SERVICE_NAME/
                   git config --local user.name "mobingideployer"
                   git config --local user.email "dev@mobingi.com"
                   NOW=`date`
                   echo "Updated at ${NOW}" > updated.txt
                   git add .
-                  git commit -am "Trigger rbac deployment at ${NOW} from ${CIRCLE_BRANCH}"
+                  git commit -am "Trigger SERVICE_NAME deployment at ${NOW} from ${CIRCLE_BRANCH}"
                   git push
                   popd
                 fi
