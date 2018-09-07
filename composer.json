@@ -76,7 +76,6 @@
     },
     "scripts": {
         "pre-install-cmd": "App\\Script::install",
-        "pre-update-cmd": "App\\Script::install",
         "post-create-project-cmd": [
             "@development-enable"
         ],
