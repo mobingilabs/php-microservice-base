@@ -50,6 +50,9 @@ class Script
 
         $answer = self::ask("Are you using PHPStorm? Want to auto add Docker image config? y/n");
         if ($answer === 'y' || $answer === 'yes') {
+            if (!file_exists('./.idea/runConfigurations')) {
+                mkdir('./.idea/runConfigurations', 0777, true);
+            }
             copy('./src/App/docker_image_config.xml', './.idea/runConfigurations/docker_image_config.xml');
             self::log("Don't forget to change DYNAMO_KEY and DYNAMO_SECRET in docker config env vars for the correct values!", '36');
         }
