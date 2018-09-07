@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "id": "http://SERVICE_NAME/exampleUpdateSchema#",
+  "id": "http://SERVICE_NAME/ExampleUpdateSchema#",
   "allOf": [
     {
-      "$ref": "exampleCreateSchema.json",
+      "$ref": "ExampleCreateSchema.json",
       "required": []
     }
   ]

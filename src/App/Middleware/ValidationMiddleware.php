@@ -82,11 +82,12 @@ class ValidationMiddleware implements MiddlewareInterface
         $this->user   = $request->getAttribute('authorization-user');
         $currentRoute = $request->getAttribute('Zend\Expressive\Router\RouteResult')->getMatchedRouteName();
         $data         = json_decode((string)$request->getBody());
+        $schemaFile   = ucfirst($currentRoute);
 
         // 1) verify raw json body validation
-        if (file_exists("./src/App/Validation/{$currentRoute}Schema.json")) {
+        if (file_exists("./src/App/Validation/{$schemaFile}Schema.json")) {
             $validator = new Validator();
-            $validator->coerce($data, (object)['$ref' => 'file://' . realpath("./src/App/Validation/{$currentRoute}Schema.json")]);
+            $validator->coerce($data, (object)['$ref' => 'file://' . realpath("./src/App/Validation/{$schemaFile}Schema.json")]);
 
             if (!$validator->isValid()) {
                 $errors = [];
