@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "id": "http://SERVICE_NAME/exampleCreateSchema#",
+  "id": "http://SERVICE_NAME/ExampleCreateSchema#",
   "type": "object",
   "properties": {
     "name": {
