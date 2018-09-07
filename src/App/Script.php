@@ -21,6 +21,7 @@ class Script
         './.circleci/config.yml',
         './src/App/Validation/ExampleCreateSchema.json',
         './src/App/Validation/ExampleUpdateSchema.json',
+        './README.md',
     ];
 
     const FILES_TO_RENAME = [
@@ -110,7 +111,20 @@ class Script
         $composerJson = str_replace($search, '', $composerJson);
         file_put_contents('./composer.json', $composerJson);
 
-        unlink('./src/App/Script.php');
+        $search = '# How to start:
+
+```bash
+$ composer install
+```
+Follow the composer instructions and it will generate the project using data provided in the wizard.
+
+';
+
+        $readme = file_get_contents('./README.md');
+        $readme = str_replace($search, '', $readme);
+        file_put_contents('./README.md', $readme);
+
+//        unlink('./src/App/Script.php');
     }
 
     private static function toCamelCase($string): string
