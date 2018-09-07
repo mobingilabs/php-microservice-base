@@ -1,4 +1,11 @@
-# Expressive Skeleton 3 - EXAMPLE Micro-service 
+# How to start:
+
+```bash
+$ composer install
+```
+Follow the composer instructions and it will generate the project using data provided in the wizard.
+
+# Expressive Skeleton 3 - SERVICE_NAME Micro-service 
 
 ## Application Development Mode Tool
 
