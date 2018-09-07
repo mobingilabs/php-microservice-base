@@ -10,9 +10,11 @@ class Script
         './config/routes.php',
         './src/App/Factory/ExampleFactory.php',
         './src/App/Handler/ExampleHandler.php',
+        './src/App/Middleware/ValidationMiddleware.php',
         './src/App/Model/ExampleModel.php',
         './src/App/Validation/ExampleCreateSchema.json',
         './src/App/Validation/ExampleUpdateSchema.json',
+        './src/App/ConfigProvider.php',
     ];
 
     const FILES_TO_REPLACE_SERVICE = [
@@ -47,10 +49,6 @@ class Script
         exit(0);
     }
 
-    /**
-     * @param string $question
-     * @return string
-     */
     private static function ask(string $question): string
     {
         do {
@@ -61,11 +59,6 @@ class Script
         return $answer;
     }
 
-    /**
-     * @param string $message
-     * @param string $color
-     * @param string $color
-     */
     private static function log(string $message, $color = '0'): void
     {
         // Colors: (0 = White) (31 = Red) (32 = Green) (33 = Yellow) (34 = Blue) (35 = Purple) (36 = Light blue)
@@ -111,22 +104,14 @@ class Script
 
     private static function finishScript()
     {
+        unlink('./src/App/Script.php');
     }
 
-    /**
-     * @param $string
-     *
-     * @return string
-     */
     private static function toCamelCase($string): string
     {
         return lcfirst(str_replace(' ', '', ucwords(preg_replace('/^a-z0-9' . implode('', []) . ']+/', ' ', $string))));
     }
 
-    /**
-     * @param $string
-     * @return string
-     */
     private static function toUnderscore($string): string
     {
         return strtolower(preg_replace(['/([a-z\d])([A-Z])/', '/([^_])([A-Z][a-z])/'], '$1_$2', $string));
