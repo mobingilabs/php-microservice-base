@@ -4,18 +4,7 @@
     "type": "project",
     "homepage": "https://mobingi.com",
     "license": "BSD-3-Clause",
-    "keywords": [
-        "skeleton",
-        "middleware",
-        "psr",
-        "psr-7",
-        "psr-11",
-        "psr-15",
-        "zf",
-        "zendframework",
-        "zend-expressive",
-        "mobingi"
-    ],
+    "keywords": [],
     "config": {
         "sort-packages": true
     },

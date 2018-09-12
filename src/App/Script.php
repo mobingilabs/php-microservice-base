@@ -122,7 +122,7 @@ class Script
         $search = '# How to start:
 
 ```bash
-$ composer install
+$ composer create-project mobingilabs/php-microservice-base your_service_name_here
 ```
 Follow the composer instructions and it will generate the project using data provided in the wizard.
 
@@ -162,7 +162,5 @@ Follow the composer instructions and it will generate the project using data pro
         file_put_contents('./src/App/docker_image_config.xml', $content);
 
         copy('./src/App/docker_image_config.xml', './.idea/runConfigurations/docker_image_config.xml');
-
-        self::log("Don't forget to restart you PHPStorm!", '31');
     }
 }

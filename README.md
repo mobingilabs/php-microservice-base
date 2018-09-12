@@ -1,7 +1,7 @@
 # How to start:
 
 ```bash
-$ composer install
+$ composer create-project mobingilabs/php-microservice-base your_service_name_here
 ```
 Follow the composer instructions and it will generate the project using data provided in the wizard.
 
