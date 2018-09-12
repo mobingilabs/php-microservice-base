@@ -4,7 +4,6 @@
       <settings>
         <option name="JSONFilePath" value="" />
         <option name="command" value="" />
-        <option name="commandLineOptions" value="--network mobingi" />
         <option name="containerName" value="SERVICE_NAME" />
         <option name="entrypoint" value="" />
         <option name="envVars">
