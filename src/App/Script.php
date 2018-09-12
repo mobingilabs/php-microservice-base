@@ -50,20 +50,7 @@ class Script
 
         $answer = self::ask("Are you using PHPStorm? Want to auto add Docker image config? y/n");
         if ($answer === 'y' || $answer === 'yes') {
-            self::log("Please provide your AWS credentials.", '36');
-            $accessKeyId     = self::ask('Access Key ID:');
-            $secretAccessKey = self::ask('Secret Access Key:');
-
-            if (!file_exists('./.idea/runConfigurations')) {
-                mkdir('./.idea/runConfigurations', 0777, true);
-            }
-
-            $content = file_get_contents('./src/App/docker_image_config.xml');
-            $content = str_replace('AWS_ACCESS_KEY_ID', $accessKeyId, $content);
-            $content = str_replace('AWS_SECRET_ACCESS_KEY', $secretAccessKey, $content);
-            file_put_contents('./src/App/docker_image_config.xml', $content);
-
-            copy('./src/App/docker_image_config.xml', './.idea/runConfigurations/docker_image_config.xml');
+            self::addPHPStormConfig();
         }
 
         self::finishScript();
@@ -72,7 +59,8 @@ class Script
     private static function ask(string $question): string
     {
         do {
-            self::log($question, '33');
+            $border = "\033[33m>>>\033[0m";
+            fwrite(STDOUT, "{$border} \033[33m {$question} \033[0m");
             $answer = trim(fgets(STDIN));
         } while (empty($answer));
 
@@ -156,5 +144,23 @@ Follow the composer instructions and it will generate the project using data pro
     private static function toUnderscore($string): string
     {
         return strtolower(preg_replace(['/([a-z\d])([A-Z])/', '/([^_])([A-Z][a-z])/'], '$1_$2', $string));
+    }
+
+    private static function addPHPStormConfig(): void
+    {
+        self::log("Please provide your AWS credentials.", '36');
+        $accessKeyId     = self::ask('Access Key ID:');
+        $secretAccessKey = self::ask('Secret Access Key:');
+
+        if (!file_exists('./.idea/runConfigurations')) {
+            mkdir('./.idea/runConfigurations', 0777, true);
+        }
+
+        $content = file_get_contents('./src/App/docker_image_config.xml');
+        $content = str_replace('AWS_ACCESS_KEY_ID', $accessKeyId, $content);
+        $content = str_replace('AWS_SECRET_ACCESS_KEY', $secretAccessKey, $content);
+        file_put_contents('./src/App/docker_image_config.xml', $content);
+
+        copy('./src/App/docker_image_config.xml', './.idea/runConfigurations/docker_image_config.xml');
     }
 }
