@@ -19,6 +19,7 @@ class Script
 
     const FILES_TO_REPLACE_SERVICE = [
         './.circleci/config.yml',
+        './src/App/Factory/AbstractFactory.php',
         './src/App/Validation/ExampleCreateSchema.json',
         './src/App/Validation/ExampleUpdateSchema.json',
         './src/App/docker_image_config.xml',
