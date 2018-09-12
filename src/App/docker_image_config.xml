@@ -15,15 +15,15 @@
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="XDEBUG_CONFIG" />
-              <option name="value" value="remote_host=192.168.100.88" />
+              <option name="value" value="remote_connect_back=1" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="DYNAMO_KEY" />
-              <option name="value" value="?????" />
+              <option name="value" value="AWS_ACCESS_KEY_ID" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="DYNAMO_SECRET" />
-              <option name="value" value="?????" />
+              <option name="value" value="AWS_SECRET_ACCESS_KEY" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="DYNAMO_REGION" />
