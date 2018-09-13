@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use Composer\Script\Event;
+
 class Script
 {
     const FILES_TO_REPLACE_RESOURCE = [
@@ -34,8 +36,14 @@ class Script
         './src/App/Validation/ExampleUpdateSchema.json',
     ];
 
-    public static function install(): void
+    public static function install(Event $event): void
     {
+        var_dump('getFlags', $event->getFlags());
+        var_dump('getArguments', $event->getArguments());
+        var_dump('getName', $event->getName());
+        var_dump('isDevMode', $event->isDevMode());
+        exit;
+
         $serviceName  = self::ask('What is the "micro-service" name?');
         $resourceName = self::ask('What is the "resource" name?');
         $answer       = self::ask("Service name is [{$serviceName}] and resource name is [{$resourceName}], do you want to continue? y/n");
