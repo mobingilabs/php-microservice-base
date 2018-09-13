@@ -38,49 +38,40 @@ class Script
 
     public static function install(Event $event): void
     {
-        var_dump('getFlags', $event->getFlags());
-        var_dump('getArguments', $event->getArguments());
-        var_dump('getName', $event->getName());
-        var_dump('isDevMode', $event->isDevMode());
-        exit;
+        $answers['Service_Name']    = $event->getIO()->ask("\n  <question>>>> What is the 'micro-service' name?</question> [default: <comment>my service</comment>] ", 'my service');
+        $answers['Resource_Name']   = $event->getIO()->ask("\n  <question>>>> What is the 'resource' name?</question> [default: <comment>my resource</comment>] ", 'my resource');
+        $answers['PHPStorm_Config'] = $event->getIO()->askConfirmation("\n  <question>>>> Are you using PHPStorm? Do you want to auto add Docker image config?</question> (y/n) [default: <comment>yes</comment>] ", true);
+        if ($answers['PHPStorm_Config']) {
+            $event->getIO()->write("\n  <info>>>> Please provide your AWS credentials</info>");
+            $answers['Access_Key_ID']     = $event->getIO()->ask("\n  <question>>>> Access Key ID:</question> ", 'not-provided');
+            $answers['Secret_Access_Key'] = $event->getIO()->ask("\n  <question>>>> Secret Access Key:</question> ", 'not-provided');
+            $answers['PHPStorm_Config']   = 'yes';
+        } else {
+            unset($answers['PHPStorm_Config']);
+        }
 
-        $serviceName  = self::ask('What is the "micro-service" name?');
-        $resourceName = self::ask('What is the "resource" name?');
-        $answer       = self::ask("Service name is [{$serviceName}] and resource name is [{$resourceName}], do you want to continue? y/n");
+        $event->getIO()->write("\n  ::: Your current configuration:");
+        $event->getIO()->write("  -------------------------------");
+        foreach ($answers as $key => $answer) {
+            $event->getIO()->write("  ::: {$key}: <info>{$answer}</info>");
+        }
+        $start = $event->getIO()->askConfirmation("\n  <question>>>> Do you want to proceed?</question> (y/n) [default: <comment>yes</comment>] ", true);
 
-        if ($answer === 'n' || $answer === 'no') {
-            echo PHP_EOL . 'Canceling...' . PHP_EOL;
+        if (!$start) {
+            $event->getIO()->write("\n  <warning>>>> Canceling...</warning>");
             exit(0);
         }
 
-        self::replaceFilesContentResource($resourceName);
-        self::replaceFilesContentService($serviceName);
-        self::renameFiles($resourceName);
+        self::replaceFilesContentResource($answers['Resource_Name']);
+        self::replaceFilesContentService($answers['Service_Name']);
+        self::renameFiles($answers['Resource_Name']);
 
-        $answer = self::ask("Are you using PHPStorm? Want to auto add Docker image config? y/n");
-        if ($answer === 'y' || $answer === 'yes') {
-            self::addPHPStormConfig();
+        if (isset($answers['PHPStorm_Config'])) {
+            $event->getIO()->write("\n  <info>>>> Creating PHPStorm Configurations...</info>");
+            self::addPHPStormConfig($answers);
         }
 
         self::finishScript();
-    }
-
-    private static function ask(string $question): string
-    {
-        do {
-            $border = "\033[33m>>>\033[0m";
-            fwrite(STDOUT, "{$border} \033[33m {$question} \033[0m");
-            $answer = trim(fgets(STDIN));
-        } while (empty($answer));
-
-        return $answer;
-    }
-
-    private static function log(string $message, $color = '0'): void
-    {
-        // Colors: (0 = White) (31 = Red) (32 = Green) (33 = Yellow) (34 = Blue) (35 = Purple) (36 = Light blue)
-        $border = "\033[32m:::\033[0m";
-        fwrite(STDOUT, "{$border} \033[{$color}m {$message} \033[0m {$border}" . PHP_EOL);
     }
 
     private static function renameFiles($resourceName)
@@ -155,19 +146,15 @@ Follow the composer instructions and it will generate the project using data pro
         return strtolower(preg_replace(['/([a-z\d])([A-Z])/', '/([^_])([A-Z][a-z])/'], '$1_$2', $string));
     }
 
-    private static function addPHPStormConfig(): void
+    private static function addPHPStormConfig($answers): void
     {
-        self::log("Please provide your AWS credentials.", '36');
-        $accessKeyId     = self::ask('Access Key ID:');
-        $secretAccessKey = self::ask('Secret Access Key:');
-
         if (!file_exists('./.idea/runConfigurations')) {
             mkdir('./.idea/runConfigurations', 0777, true);
         }
 
         $content = file_get_contents('./src/App/docker_image_config.xml');
-        $content = str_replace('AWS_ACCESS_KEY_ID', $accessKeyId, $content);
-        $content = str_replace('AWS_SECRET_ACCESS_KEY', $secretAccessKey, $content);
+        $content = str_replace('AWS_ACCESS_KEY_ID', $answers['Access_Key_ID'], $content);
+        $content = str_replace('AWS_SECRET_ACCESS_KEY', $answers['Secret_Access_Key'], $content);
         file_put_contents('./src/App/docker_image_config.xml', $content);
 
         copy('./src/App/docker_image_config.xml', './.idea/runConfigurations/docker_image_config.xml');
