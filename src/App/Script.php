@@ -211,7 +211,7 @@ Follow the composer instructions and it will generate the project using data pro
      */
     private function createGithubConfig()
     {
-//        $this->createRepository();
+        $this->createRepository();
         $this->execGitCommands();
 
         $this->io->write("\n  ::: Your current configuration:");
