@@ -56,28 +56,28 @@ class Script
         $installer = new self($event->getIO(), $event->getComposer());
 
         $installer->answers['Service_Name'] = $installer->io->ask("\n  <question>>>> What is the 'micro-service' name?</question> [default: <comment>my service</comment>] ", 'my service');
-//        $installer->answers['Resource_Name']   = $installer->io->ask("\n  <question>>>> What is the 'resource' name?</question> [default: <comment>my resource</comment>] ", 'my resource');
-//        $installer->answers['PHPStorm_Config'] = $installer->io->askConfirmation("\n  <question>>>> Are you using PHPStorm? Do you want to auto add Docker image config?</question> (y/n) [default: <comment>yes</comment>] ", true);
-//        if ($installer->answers['PHPStorm_Config']) {
-//            $installer->io->write("\n  <info>>>> Please provide your AWS credentials</info>");
-//            $installer->answers['Access_Key_ID']     = $installer->io->ask("\n  <question>>>> Access Key ID:</question> ", 'not-provided');
-//            $installer->answers['Secret_Access_Key'] = $installer->io->ask("\n  <question>>>> Secret Access Key:</question> ", 'not-provided');
-//            $installer->answers['PHPStorm_Config']   = 'yes';
-//        } else {
-//            unset($installer->answers['PHPStorm_Config']);
-//        }
+        $installer->answers['Resource_Name']   = $installer->io->ask("\n  <question>>>> What is the 'resource' name?</question> [default: <comment>my resource</comment>] ", 'my resource');
+        $installer->answers['PHPStorm_Config'] = $installer->io->askConfirmation("\n  <question>>>> Are you using PHPStorm? Do you want to auto add Docker image config?</question> (y/n) [default: <comment>yes</comment>] ", true);
+        if ($installer->answers['PHPStorm_Config']) {
+            $installer->io->write("\n  <info>>>> Please provide your AWS credentials</info>");
+            $installer->answers['Access_Key_ID']     = $installer->io->ask("\n  <question>>>> Access Key ID:</question> ", 'not-provided');
+            $installer->answers['Secret_Access_Key'] = $installer->io->ask("\n  <question>>>> Secret Access Key:</question> ", 'not-provided');
+            $installer->answers['PHPStorm_Config']   = 'yes';
+        } else {
+            unset($installer->answers['PHPStorm_Config']);
+        }
 
         $installer->answers['Github_Config'] = $installer->io->askConfirmation("\n  <question>>>> Do you want to auto add Github repository?</question> (y/n) [default: <comment>yes</comment>] ", true);
         if ($installer->answers['Github_Config']) {
             $installer->io->write("\n  <info>>>> Please provide your Github configurations</info>");
-            $installer->answers['Github_Access_Key_Token'] = $installer->io->ask("\n  <question>>>> Access Key Token:</question> ", 'c56c839089358145afde1ab47904ce6f072399b1');
+            $installer->answers['Github_Access_Key_Token'] = $installer->io->ask("\n  <question>>>> Access Key Token:</question> ", 'not-provided');
             $installer->answers['Github_Team_ID']          = $installer->io->askAndValidate("\n  <question>>>> Team ID (numbers only):</question> ", function ($value) {
                 if (!intval($value)) {
                     throw new \Exception('Team ID should be number only.');
                 }
 
                 return $value;
-            }, 1, 2833513);
+            }, 1);
 
             $installer->answers['Github_Config'] = 'yes';
         } else {
@@ -97,13 +97,13 @@ class Script
             exit(0);
         }
 
-//        $$installer->replaceFilesContentResource($installer->answers['Resource_Name']);
-//        $$installer->replaceFilesContentService($installer->answers['Service_Name']);
-//        $$installer->renameFiles($installer->answers['Resource_Name']);
+        $installer->replaceFilesContentResource($installer->answers['Resource_Name']);
+        $installer->replaceFilesContentService($installer->answers['Service_Name']);
+        $installer->renameFiles($installer->answers['Resource_Name']);
 
         if (isset($installer->answers['PHPStorm_Config'])) {
             $installer->io->write("\n  <info>>>> Creating PHPStorm Configurations...</info>");
-            $$installer->addPHPStormConfig();
+            $installer->addPHPStormConfig();
         }
 
         if (isset($installer->answers['Github_Config'])) {
@@ -114,7 +114,7 @@ class Script
         $installer->finishScript();
     }
 
-    public function __construct(IOInterface $io, Composer $composer, string $projectRoot = null)
+    public function __construct(IOInterface $io, Composer $composer)
     {
         $this->io       = $io;
         $this->composer = $composer;
@@ -180,6 +180,10 @@ Follow the composer instructions and it will generate the project using data pro
 
         unlink('./src/App/docker_image_config.xml');
         unlink('./src/App/Script.php');
+
+        if (isset($installer->answers['Github_Config'])) {
+            $this->io->write("\n  <info>>>> Your new repository is: {$this->answers['Github_Clone_Url']}</info>");
+        }
     }
 
     private function toCamelCase($string): string
@@ -212,27 +216,6 @@ Follow the composer instructions and it will generate the project using data pro
     private function createGithubConfig()
     {
         $this->createRepository();
-        $this->execGitCommands();
-
-        $this->io->write("\n  ::: Your current configuration:");
-        $this->io->write("  -------------------------------");
-        foreach ($this->answers as $key => $answer) {
-            $this->io->write("  ::: {$key}: <info>{$answer}</info>");
-        }
-
-        exit;
-    }
-
-    private function execGitCommands()
-    {
-
-        exec('git init', $output, $return);
-        exec('git config --local user.name "mobingideployer"', $output, $return);
-        exec('git config --local user.email "dev@mobingi.com"', $output, $return);
-        exec('git add .', $output, $return);
-        exec('git commit -m "first commit"', $output, $return);
-        exec('git remote add origin ' . $this->answers['Github_SSH_Url'], $output, $return);
-        exec('git push -u origin master', $output, $return);
     }
 
     /**
@@ -265,11 +248,9 @@ Follow the composer instructions and it will generate the project using data pro
 
         if ($err) {
             throw new \Exception("cURL Error #: {$err}");
-        } else {
-            echo $response;
-            $data = json_decode($response);
-
-            $this->answers['Github_SSH_Url'] = $data->ssh_url;
         }
+
+        $data = json_decode($response);
+        $this->answers['Github_Clone_Url']       = $data->clone_url;
     }
 }
