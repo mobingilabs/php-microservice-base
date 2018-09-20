@@ -178,12 +178,12 @@ Follow the composer instructions and it will generate the project using data pro
         $readme = str_replace($search, '', $readme);
         file_put_contents('./README.md', $readme);
 
-        unlink('./src/App/docker_image_config.xml');
-        unlink('./src/App/Script.php');
-
         if (isset($installer->answers['Github_Config'])) {
             $this->io->write("\n  <info>>>> Your new repository is: {$this->answers['Github_Clone_Url']}</info>");
         }
+
+        unlink('./src/App/docker_image_config.xml');
+        unlink('./src/App/Script.php');
     }
 
     private function toCamelCase($string): string
