@@ -107,7 +107,7 @@ class Script
         }
 
         if (isset($installer->answers['Github_Config'])) {
-            $installer->io->write("\n  <info>>>> Creating Github Configurations...</info>");
+            $installer->io->write("\n  <info>>>> Creating Github Repository...</info>");
             $installer->createGithubConfig();
         }
 
@@ -178,8 +178,8 @@ Follow the composer instructions and it will generate the project using data pro
         $readme = str_replace($search, '', $readme);
         file_put_contents('./README.md', $readme);
 
-        if (isset($installer->answers['Github_Config'])) {
-            $this->io->write("\n  <info>>>> Your new repository is: {$this->answers['Github_Clone_Url']}</info>");
+        if (isset($this->answers['Github_Config'])) {
+            $this->io->write("\n  <info>>>> Your new Github repository is: {$this->answers['Github_Clone_Url']}</info>");
         }
 
         unlink('./src/App/docker_image_config.xml');
